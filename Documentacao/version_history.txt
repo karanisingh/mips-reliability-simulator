@@ -1,0 +1,268 @@
+[0.1.1] 29/05/15 - Dalton
+*Criado arquivo HEADER "mips.h" e fazendo as primeiras experiências com ele
+	-algumas constantes definidas (testes com registros)
+	-funcao xor - tabela verdade XOR (sem carry)
+	-struct de uma instrucao tipo R
+	-listagem dos 32 registros e seus valores em decimais (so comentarios)
+	
+*Criado arquivo filemanager.h para ler e escrever .txt - ainda vazio
+
+[0.1.2] 30/05/15 - Dalton
+* Criado no filemanager.h a funcao void readBinary ()
+	- A funcao le o arquivo .\teste\binary1.txt e imprime seu conteudo na tela
+	- Por enquanto so le a primeira linha do arquivo
+
+[0.1.3] ??/??/15 - Victor
+* Implementou funcao getRegisterAB ()
+	em desenvolvimento
+
+[0.2.0] 04/06/15
+* Criado funcao readAssembly () no filemanager.h (deprecated - em desuso)
+ 
+[0.3.0] 05/06/15 
+* Lendo linha por linha dos arquivos .txt
+ 
+[0.3.5] 05/06/15 - Dalton
+* Criado funcao getNameAssembly (no filemanager.h)
+	- A funcao recebe um array de char (linha de comando Assembly) e retorna um array com a PRIMEIRA PALAVRA (os comandos: add, sub, etc)
+
+* main.c levemente alterado
+*experimentos com: const char $s0[] = "10000";   - define um array char para cada string dada.
+
+[0.3.6] 06/06/15 - Dalton
+* Criado funcao char *registerToBinary(char *registerAssembly) (no mips.h)       -- substituindo a funcao getRegisterAB ()  
+	- Dado um string com o registro em assembly, ela retorna uma string com o respectivo valor em binario
+	- Retorna "xxxxx" caso nao encontre nenhum dos 32 registradores MIPS
+	
+* Aproveitei e dei uma "limpada" em funcoes nao utilizadas no main.c e mips.h
+
+[0.3.7] 06/05/15 - Dalton
+* Nesta versao optei por uma "mudanca leve de estrategia" - Ao inves de struct, optaremos por Global Vars para os campos.
+* Criado 3 funcoes que concatenam a linha de saida. concatenateR, concatenateI, concatenateJ  (todas no mips.h)
+	 - Uma versao para R, i e J.
+	 - Resumidamente as funcoes "juntam" os campos necessarios para dar o output.
+	
+[0.3.8] 07/06/15 - Dalton
+* Criado funcao ripDataAssembly (no mips.h) 
+	- a funcao extrai todos os registradores de uma linha
+	- ainda nao extrai inteiros
+	- ainda nao atribui aas variaveis globais
+
+* Enxugado alguns conteudos de teste do main.c
+		
+[0.3.9] 07/06/15 - Dalton		
+* Criado funcao: int isNumeric (char ch) 
+	- retorna 1 se o caracter eh numerico, incluindo o hifen para caso de negativos
+	- retorna 0 se qualquer outro.
+
+* Criado funcao isBinary (char ch) 
+	- logica identica a funcao acima.
+
+[0.3.10] 07/06/15 - Dalton
+* Atualizado funcao ripDataAssembly (no mips.h)
+	- agora alem dos registradores, ela tambem os immediates (inteiros) =D
+	- nas linhas "j 2500" e "jal 2500" os inteiros nao sao extraidos, porem tecnicamente neste caso, eles nao sao immediate e sim address
+
+[0.3.11] 11/06/15 - Victor
+*Criado as funções:
+	- char *charTo5BitsU(char *charNumber) : 
+		- função que recebe um numero inteiro em string, e retorna uma string com o mesmo numero em binário 5bits Unsigned, Range: [0,31]
+
+	- char *charTo16BitsU(char *charNumber) :
+		- função que recebe um numero inteiro em string, e retorna um char com o mesmo numero em binário 16 bits em Complemento de 2, Range: [0,65535]  
+
+	- char *charTo16Bits (char *charNumber) :
+		- função que recebe um numero inteiro em string, e retorna um char com o mesmo numero em binário 16 bits Unsigned, Range: [-32768,32767]
+		
+[0.4.0] 14/06/15 - Dalton
+* "Enxugada" em linhas de teste das primeiras versões.
+* Alterado declaracao das variaveis Globais (extern)
+* Nesta versao temos um exemplo da funcao ripDataAssembly() convertendo um registrador em binario e escrevendo na variavel global referente.
+* Pequena melhoria na funcao ripDataAssembly()
+	- agora apos a "ripagem" colocamos um '\0' ao final das strings
+* Adicionado arquivo assembly liberado pelo professor (na pasta "teste")
+* Adicionado funcao void printPointer(char *string, int length)
+	- simplesmente imprime na tela uma string, dado o seu ponteiro e o tamanho
+	- util pra casos em que nao temos certeza de um terminator ao fim da string, ou pra imprimeir substrings		
+	
+[0.5.0] 14/06/15 - Dalton
+* Funcoes repaginadas: void charToBits (char *charInput, char *charOutput ) 
+	- agora todas essas funcoes sao do tipo VOID, agora basta passar um ponteiro com a entrada, e outro onde devera ser alocada a saida
+		- dessa forma evitamos o uso de malloc
+	- anteriormente elas nao davam saidas nos tamanhos especificados
+	- numeros negativos 'crash'avam o programa nas versoes Unsigned, agora retornam 'XXXXX'
+	- logicas interiores moduladas: vejam funcoes:
+		- not() faz complemento do array,
+		- padZero() completa com zeros a esquerda dinamicamente
+	- na funcao main.c temos um teste dessas funcoes na pratica
+	
+[0.5.1] 14/06/15 - Dalton
+* Aqui pela primeira vez conseguimos "printar" na tela a linha completa convertida,
+  porem soh funciona pra instrucao "add"
+  	- ver instrucao addToBinary ( )
+	  
+[0.5.2] 14/06/15 - Dalton
+* Implementado funcao void filterInstruction(char *instruction)
+	- simplesmente filtra e reencaminha cada funcao individualmente
+* Implementado algumas funcoes especificas de instrucoes, como:
+	- addToBinary(), addiToBinary(), addiuToBinary() e andToBinary()
+* As funcoes conseguem montar a linha e imprimir a linha convertida na tela
+* Enxugada no main.c
+
+[0.6.0] 14/06/15 - Dalton
+* filterInstruction () finalizado com todas as funcoes a seguir (todas void):
+		addToBinary();
+		addiToBinary();
+		addiuToBinary();
+		andToBinary();
+		andToBinary();
+		andiToBinary();
+		beqToBinary();
+		bneToBinary();
+		jToBinary();
+		jalToBinary();
+		jrToBinary();
+		lbuToBinary();
+		lhuToBinary();
+		llToBinary();
+		luiToBinary();
+		andToBinary();
+		norToBinary();
+		orToBinary();
+		oriToBinary();
+		sltToBinary();
+		sltiToBinary();
+		sltiuToBinary();
+		sltuToBinary();		
+		sllToBinary();
+		srlToBinary();
+		sbToBinary();
+		scToBinary();
+		shToBinary();
+		subToBinary();
+		subuToBinary();	
+		
+[0.7.0] 14/06/15 - Dalton
+ * Agora imprime o arquivo binario - output.txt (na pasta teste)
+ 
+[0.7.1] 14/06/15 - Dalton
+* Feita a mesma estrura de escrever arquivo para Binario -> Assembly  (no main.c)
+	- escreveremos no teste/outputAssembly.txt e teste/outputBinary.txt
+	
+[0.7.2] 15/06/15 - Dalton 
+* Implementado void getOpcodeBinary (char *inputLine)
+	- extrai o opcode dos binarios	
+	
+[0.7.5] 15/06/15 - Dalton
+* Implementado void ripDataBinary(char *opcodeBinary)
+	- determina pelo OPCODE se a funcao eh R, I , J ou LABEL (111111)
+* Implementado funcao que "recorta" devidadmente os 32 bits, dados que eles possam ser R, I ou J ou LABEL
+
+[0.7.6] 15/06/15 - Dalton
+* Implementado funcao void registerToAssembly(char *registerBinary, char *registerAssembly)
+	- Funcao que converte registros de Assembly para Binario, dado duas variaveis globais.
+	- Repare que a funcao eh void, e nao necessita alocar dinamicamente mais memoria
+	- Similar a funcao registerToBinary (porem a implementacao anterior usava memoria dinamica),
+	   
+[0.7.7] 15/06/15 - Dalton 
+* Impementado funcao ripBinaryI(),ripBinaryJ(),  ripBinaryR(), ripBinaryLabel()
+ 	- Basicamente elas "recortam" as words binarias de acordo com o tipo
+* Implementado void registerToAssembly() 
+	- funcionando parcialmente, a partir do funct da todas as instrucoes R em Assembly	 
+
+[0.7.8] 15/06/15 - Dalton 
+* Impementado funcao void instructionI (), void instructionJ ()
+
+[0.8.0] 15/06/15 - Dalton
+* Implementado demais funcoes de concatenar linhas: void concatenateRBinary()
+	- R, I e J
+* montando linhas Binarias e escrevendo no arquivo teste/outputAssembly.txt   
+
+[0.8.1] 18/06/15 - victor
+* Adicionada a função: Binary16ToChar();
+	-Convertendo uma string binário (com complemento de 2) e passando para uma string em inteiro
+	-OBS: não são necessárias até o momento funções 'binary -> int' unsigned, pois a função strtol() faz essa conversão tranquilamente
+	
+[0.9.0] 20/06/15 - Dalton
+* Implementado funcao int isLabel (*char inputline)
+	- Verifica se a linha eh um label em Assembly - retorna 0 se não eh
+* no main.c filtramos se a linha lida eh label ou instrucao. / 
+	- labels SEMPRE DEVEM ocupar uma unica linha. EX: NAO eh permitido LABEL: add $s0,$s1,$s2
+* implementado Contador de linha Program Counter no Assembly
+	- variaval global int pcAssembly
+* contateBinary`s () melhoradas
+	- agora elas convertem os immediates para decimais (ou deveriam)
+	
+[0.9.1] 21/06/15 - Dalton
+* Aperfeicoado ripDataAssembly ( ) para extrair tambem os labels
+	- uso nas funcoes beq e bne 
+* Implementado void concatenateILabel()  // para montar beq e bne
+
+[0.9.2] 21/06/15 - Lucas
+* Inclusão da função fillJumpAdressTable(), responsável por criar um array de estruturas contendo informações sobre os labels presentes no arquivo
+* Inclusão da função searchLabel(), responsável por buscar um determinado label por nome, retornando o número da linha em que ele se encontra
+
+[0.9.3] 21/06/15 - Dalton
+* Reformulada funcao fillJumpAdressTable()
+	- antes nao linha a segunda linha, agora preenche corretamente os campos
+	
+[0.10.0] 21/06/15 - Dalton
+* Finalmente agora estamos escrevendo binarios com os labels em posicao relativa
+	- ainda falta os labels em posicao absoluta (J e JAL)	
+	
+[0.10.1] 21/06/15 - Dalton
+* funcoes void Binary16ToChar reformuladas, agora estao fazendo a conversao 
+	- versao Binary16ToCharU feita tb (somento o strtol nao foi suficiente)
+	
+[0.10.2] 21/06/15 - Dalton
+* Implementado void charTo26BitsU 
+	- funcoes tipo J usam essa conversao 
+
+[0.10.3] 21/06/15 - Dalton
+* Implementado void binary26ToCharU
+	- funcoes tipo J usam essa conversao 
+	- A funcao anterior talvez nao seja necessaria void charTo26BitsU 
+
+[0.10.4] 21/06/15 - Dalton
+* BugFix - O registrador $zero nao era lido, pois era o unico que tinha 5 caracteres
+
+[0.10.4] 21/06/15 - Lucas (merge)
+* Incluído relatório ainda não terminado
+
+[0.11.0] 21/06/15 - Dalton
+* Criado uma funcao pra cada instrucao no modo binario->assembly
+	- Implementado mascara nas funcoes do tipo I com Parenthesis 
+	
+[1.0.0] 22/06/15 - Dalton
+* Release Candidate
+	- Finalmente a versao final (com muuitos bugs corrigidos)	
+
+[1.1.0] - 22/06/15 - Dalton
+* Atualizado caminho dos arquivos
+	- Agora basta colocar os arquivos na mesma pasta do main.exe
+	- Os arquivos devem se chamar OBRIGATORIAMENTE assembly.txt e binary.txt
+	- Os arquivos de saida sao gerados na mesma pasta
+	
+## Parte 2 do trabalho ##
+	
+[2.0.0] - 29/08/15 - Dalton
+* Criado mips.c e mips2.h
+	- Segundo modulo do programa.
+	- Usaremos menos estruturas e so trabalharemos com a parte binaria do programa
+		e focaremos em executar algumas instrucoes atualizando
+	- 3 structs criados memory, data e registers 
+	
+[2.1.0] - 29/08/15 - Dalton
+* Reestruturando o parse das instrucoes
+
+[2.1.1] - 29/08/15 - Dalton
+* Alterado algumas instrucoes - somente dados
+
+[2.1.2] - 30/08/15 - Dalton
+* Registradores adicionados e algumas melhorias em dados
+
+[3.0.0] - 31/08/15 - Dalton
+* Programa concluido
+	- Executando todas as operacoes propostas (lw, add, addi, beq, sw)
+	- Sinais de controle funcionando para definir o fluxo das instrucoes
+	- Banco de memorias, registradores iniciam e terminam com os valores esperados

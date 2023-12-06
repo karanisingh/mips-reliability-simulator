@@ -1,0 +1,7 @@
+lw $t0,4($t1)
+addi $t1,$zero,8
+add $t2,$t0,$t1
+beq $t2,$t3,loop
+addi $t3,$zero,0
+loop:
+sw $t3,4($t1) 
