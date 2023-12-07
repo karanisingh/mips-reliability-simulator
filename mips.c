@@ -17,6 +17,8 @@ Lucas Pinheiro - pinheiro.lucasaugusto@gmail.com
 #include <stdlib.h>
 #include <string.h>  //strcpy()
 #include "mips2.h"
+#include <conio.h> // Vicky added this for getch()
+
 
 static const int INSTRUCTION_LENGTH = 6;
 
@@ -134,13 +136,13 @@ void clearScreen()
 
 void printRegisters()
 {	
-	printf("\n ### Registradores ###\n"); //8 a 11
+	printf("\n ### Registrars ###\n"); //8 a 11
 	int i;
 	for (i = 8; i < 12; i++)
 	{
 		printf("$t%d : ", i-8);  // bela gambiarra hein! Quando ver sera tarde ehehe!
 		puts((registerFile[i]).RegisterNumber);
-		printf("Dados: ");puts((registerFile[i]).registerData);
+		printf("Data: ");puts((registerFile[i]).registerData);
 	}
 }
 
@@ -150,7 +152,7 @@ void printDataMemory()
 	int i;
 	for (i = 1; i < 4; i++)
 	{
-		printf("Posicao: %d - Dados: ", (dataMemory[i]).dataAddress);
+		printf("Position: %d - Data: ", (dataMemory[i]).dataAddress);
 		puts((dataMemory[i]).DataLine);
 	}
 }
@@ -181,7 +183,7 @@ void alu()
 	char temp1[33];
 	char temp2[33];
 	int int1, int2, soma;
-	AluZero = '0';  // soh pra resetar
+	AluZero = '0';  // just to reset
 
 	if (AluSrc == '0')
 	{
@@ -194,11 +196,11 @@ void alu()
 
 	if (AluOp == '0') //soma
 	{
-		int1 = binary32ToChar(reg1Out, temp1);  //converte pra inteiro as entradas
+		int1 = binary32ToChar(reg1Out, temp1);  //converts the entries to integer
 		int2 = binary32ToChar(aluSource2, temp2);
-		soma = int1 + int2;  // soma os inteiros
-		itoa(soma, temp1, 10);  // converte pra texto
-		charTo32Bits(temp1, aluOut);  // converte pra texto binario e ja da a saida
+		soma = int1 + int2;  // add the integers
+		itoa(soma, temp1, 10);  // convert to text
+		charTo32Bits(temp1, aluOut);  // converts it to binary text and gives the output
 	}
 	else // beq - compara igualdade entre os operando
 	{
@@ -224,15 +226,15 @@ void registerOut()
 	int i;
 	for (i = 0; i < 32; i++)
 	{
-		if (! strcmp(opcodeBinary, "000000") )  //se for instrucao tipo R, beq ou bne...
+		if (! strcmp(opcodeBinary, "000000") )  //if it is an R-type instruction, beq ou bne...
 		{
-			if (!strcmp(rsBinary, registerFile[i].RegisterNumber))  //pegamos reg1 do RS
+			if (!strcmp(rsBinary, registerFile[i].RegisterNumber))  //we took reg1 from RS
 			{
 				strcpy(reg1Out, registerFile[i].registerData);
 				break;
 			}
 		}
-		else  // tipo I ou J, entao pegamos reg1 do RT
+		else  // type I or J, so we take reg1 from RT
 		{
 			if (!strcmp(rtBinary, registerFile[i].RegisterNumber))
 			{
@@ -365,41 +367,41 @@ int main ()
 	inputLine[0] = '\0';  // zera a linha de entrada
 	int PC;  // nosso Program Counter
 	
-	for ( PC = 0 ; PC < INSTRUCTION_LENGTH; PC++ )  //efetua um ciclo, ate o fim das instrucoes, o numero de instrucoes eh fixo
+	for ( PC = 0 ; PC < INSTRUCTION_LENGTH; PC++ )  //performs a cycle, until the end of the instructions, the number of instructions is fixed
 	{
 		// ### (1o estagio) Instruction Fetch
-		strcpy(inputLine, instructionMemory[PC].instructionLine); //copia a instrucao para um buffer temporario
+		strcpy(inputLine, instructionMemory[PC].instructionLine); //copies the instruction to a temporary buffer
 
-		printf("\nInstrucao %d:\n", instructionMemory[PC].instructionAddress);  //imprime o indice da instrucao
-		puts (inputLine);			// inputLine contem a instrucao a ser trabalhada
+		printf("\nInstruction %d:\n", instructionMemory[PC].instructionAddress);  //prints the instruction index
+		puts (inputLine);			// inputLine contains the instruction to be worked on
 	
 		// ### (2o estagio) instuction Decode - Parse
-		getOpcodeBinary(inputLine);  // ripa o OpCode
+		getOpcodeBinary(inputLine);  // rip the OpCode
 		printf("\nOpcode: "); puts(opcodeBinary);
-		ripDataBinary(opcodeBinary); // ripa o restante dos dados - parse
+		ripDataBinary(opcodeBinary); // rip the rest of the data - parse
 					
-		signExtender(); // entende o immediate
+		signExtender(); // understands immediate
 		
-		registerOut(); // retorna os valores de saida de registradores para buffers (variaveis globais)
+		registerOut(); // returns output values ​​from registers to buffers (global variables)
 		
 		// ### (3o estagio) Execution		
-		alu();         // operacoes aritmeticas da ALU
-		PC = PC + verifyBranch();    // verifica atraves de "AluZero" e "Branch" e em caso necessario, altera o PC para tomarmos o branch
+		alu();         // ALU arithmetic operations
+		PC = PC + verifyBranch();    // check through "AluZero" and "Branch" and, if necessary, change the PC to take the branch
 
-		// ### somente imprimindo dados para conferencia
-		printInstruction(); // imprime as instrucoes ja devidamente separadas
-		printDataMemory(); //  imprime estado da Memoria
-		printRegisters();  //  imprime estado dos registradores
+		// ### only printing data for conference
+		printInstruction(); // prints the instructions already separated
+		printDataMemory(); //  print memory status
+		printRegisters();  //  prints state of registers
 
 		// ### (4o estagio) Memory 
-		memoryHandler();  // gerencia as operacoes na memoria
+		memoryHandler();  // manages in-memory operations
 						  
 		// ### (5o estagio) WriteBack
 		writeBack();
 
 		
 
-		printf("\nDigite qualquer tecla pra continuar...");
+		printf("\nType any key to continue...");
 		getch();
 		clearScreen();		
 	}

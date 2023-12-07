@@ -1,26 +1,25 @@
-Funções a serem criadas pra essa zueira toda
+Functions to be created for this whole mess
 
-Considerações:
+Considerations:
 
-- Função para conferir qual o comando assembly presente na linha lida
+- Function to check which assembly command is present in the read line
 
-- Cada comando terá uma própria função que receberá uma string com o comando completo em assembly(ex: add $s0,$s1,$s2), e retornará uma string de 33 posições com o mesmo comando, em binário. A saída será por referencia ou por valor? (pensa ae seus viado).
+- Each command will have its own function that will receive a string with the complete command in assembly (ex: add $s0,$s1,$s2), and will return a string of 33 positions with the same command, in binary. Will the output be by reference or by value? (think about your fagots).
 
--done [0.3.10.3] charTo5BitsU função que recebe um numero inteiro em char, e retorna um char com o mesmo numero em binário 5 bits Unsigned, Range: [0,31]
+-done [0.3.10.3] charTo5BitsU function that receives an integer in char, and returns a char with the same number in 5-bit binary Unsigned, Range: [0,31]
 
--done[0.3.10.6]charTo16BitsU função que recebe um numero inteiro em char, e retorna um char com o mesmo numero em binário 16 bits Unsigned, Range: [-32768,32767]
+-done[0.3.10.6]charTo16BitsU function that receives an integer in char, and returns a char with the same number in 16-bit binary Unsigned, Range: [-32768,32767]
 
--done[0.3.10.9] charTo16BitsU função que recebe um numero inteiro em char, e retorna um char com o mesmo numero em binário 16 bits em Complemento de 2, Range: [0,65535]  
-(coloquei mais um ponto só porque era uma parte de 3 funções, depois de terminadas será a versão [0.3.11])
+-done[0.3.10.9] charTo16BitsU function that receives an integer in char, and returns a char with the same number in 16-bit binary in 2's complement, Range: [0.65535]
+(I added one more point just because it was a part of 3 functions, once finished it will be version [0.3.11])
 
-done [ 0.3.7] - Uma função para transformar um struct em um array com todos os campos, já em sequencia. (Obs: Essa função será diferente para cada tipo de struct)
-*OBS:Ao menos usando Global Variables, ao inves de struct.
+done [0.3.7] - A function to transform a struct into an array with all fields, already in sequence. (Note: This function will be different for each type of struct)
+*NOTE: At least using Global Variables, instead of struct.
 
-- Função para converter uma string que representa um número, e retorna uma string binária de 5+1 algarismos (pro shamt)
+- Function to convert a string that represents a number, and returns a binary string of 5+1 digits (pro shamt)
 
-- Função para converter uma string que representa um número, e retorna uma string binária em complemento de 2, de 16+1 algarismos (pra funções do tipo I)
+- Function to convert a string that represents a number, and returns a binary string in 2's complement, with 16+1 digits (for type I functions)
 
-- Função para converter uma string que representa um número, e retorna uma string binária em sinal magnitude, de 16+1 algarismos (pra funções do tipo I)
+- Function to convert a string that represents a number, and returns a binary string in sign magnitude, of 16+1 digits (for type I functions)
 
-done [ 0.3.6] - Função registerToBinary() para consultar qual registrador será usado
-
+done [0.3.6] - RegisterToBinary() function to check which register will be used

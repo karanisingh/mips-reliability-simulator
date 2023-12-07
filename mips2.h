@@ -613,12 +613,12 @@ void getOpcodeBinary (char *inputLine)
 
 void ripDataBinary(char *opcodeBinary)
 {
-	strncpy(rsBinary, inputLine + 6, 5);  // faz o split de acordo com a funcao R
+	strncpy(rsBinary, inputLine + 6, 5);  // does the split according to the R function
 	strncpy(rtBinary, inputLine + 11, 5);
 	strncpy(rdBinary, inputLine + 16, 5);
 	strncpy(shamtBinary, inputLine + 21, 5);
 	strncpy(functBinary, inputLine + 26, 6);
-	strncpy(addressBinary, inputLine + 6, 26);   // faz o split de acordo com a funcao J
+	strncpy(addressBinary, inputLine + 6, 26);   // does the split according to the J function
 	strncpy(immediateBinary, inputLine + 16, 16);
 
 	if (!(strcmp(opcodeBinary,"000000"))){  // R
@@ -927,7 +927,7 @@ void instructionR ()
 
 void instructionJ ()
 {
-	if (!(strcmp(opcodeBinary,"000010"))){  		  //retorna 0 se iguais, portanto !0 = verdadeiro
+	if (!(strcmp(opcodeBinary,"000010"))){  		  //returns 0 if equal, therefore !0 = true
 		jToAssembly(); 
 	} else if (!(strcmp(opcodeBinary,"000011"))){
 		jalToAssembly();   		 

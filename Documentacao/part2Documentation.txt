@@ -1,19 +1,18 @@
-Para esta segunda parte do trabalho, optamos por criar um programa independente,
- optando por reutilizar a estrutura de Parser de arquivos binarios e identificacao 
- das funcoes.
+For this second part of the work, we chose to create an independent program,
+ opting to reuse the binary file parser structure and identification
+ of the functions.
 
-Criamos 3 grandes estruturas:
+We created 3 major structures:
 
 *InstructionMemory
 *RegisterFile
 *DataMemory
 
-Optamos por deixar as instrucoes ja devidamente escritas dentro do algoritmo (hardcoded)
+We chose to leave the instructions already properly written within the algorithm (hardcoded)
 
-A DataMemory ja comecava com alguns valores pre-estabelecidos.
+DataMemory already started with some pre-established values.
 
-Ao final do ciclo de instrucoes, checamos o valores presentes nas memorias e conferimos
-se todas as instrucoes foram executadas corretamente.
+At the end of the instruction cycle, we check the values ​​present in the memories and check
+whether all instructions were executed correctly.
 
-Usamos para referencia o DataPath presente na pagina 307 da 3a edicao do livro.
-
+We use the DataPath present on page 307 of the 3rd edition of the book for reference.
