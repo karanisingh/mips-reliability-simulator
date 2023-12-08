@@ -16,6 +16,7 @@ Lucas Pinheiro - pinheiro.lucasaugusto@gmail.com
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>  //strcpy()
+#include <stdbool.h>
 #include "mips2.h"
 
 int binaryStringToInt(char* bin){
@@ -56,6 +57,25 @@ char branch = '0';
 char instructionAssembly[16];     // G Var for Assembly
 int PC = 0;         		// Program Counter
 
+struct ALU_Reliability {
+	int MTTF; // mean time (iteration) to fail
+	int failed; // numer of spares that have failed
+	// clock_t lastTime; // timer to time mean time to fail
+	int iteration;
+	
+
+	////////////////
+	bool isNMR; // Are we using NMR redundacy?
+
+	int n; // Number of ALUs we need to work
+	int m; // Total number of ALU's present
+
+	int currentWorking; // How many ALUs are current working should be >=n
+
+
+};
+typedef struct ALU_Reliability ALU_Reliability;
+
 struct instruction {
 	int instructionAddress;
 	char instructionLine[33];
@@ -73,6 +93,8 @@ struct data {
 	char DataLine[33]; // dados contidos em uma "linha" ou endereco
 };
 typedef struct data data;
+
+
 
 instruction instructionMemory[16] = {
     { 0, "00100001000000000000000000000000" },
@@ -156,6 +178,16 @@ registers registerFile[32] = {  //32 registradores, por enquanto 5 pra testar
 };
 
 
+ALU_Reliability myALUnMR[1]; // Change the array size to 1
+ALU_Reliability spareALU[1];
+/*
+ALU_Reliability myALU[0] = { // int MTTF, int failed, clock_t currentime, bool isNMR, int n, intm, int currentWOkring, intCurrentlyRunning
+	{ 500,0, clock(), true, 3, 4, 4, 1}
+};
+*/
+
+
+
 void printRegisters()
 {	
 	printf("\n ### Registers ###\n"); //
@@ -205,6 +237,8 @@ void signExtender()
 		signExtend[i] = signBit;
 	printf("%s\n", signExtend);
 }
+
+
 
 void alu()
 {
@@ -265,6 +299,64 @@ void alu()
 	itoa(result, temp1, 10);  // convert to text
 	charTo32Bits(temp1, aluOut);  // converts it to binary text and gives the output
 	
+}
+
+
+// Function to handle ALU reliability
+void ALU_helper(ALU_Reliability *myALU) {
+    // Get the current time
+	printf("\n");
+	printf("ALU_helper was called!!!!\n");
+   // clock_t current_time = clock();
+
+    // Check if the ALU is configured with NMR
+    if (myALU->isNMR) {
+        // Handle NMR-related logic here
+        if (myALU->currentWorking >= myALU->n) {
+
+            // Check if a failure will occur based on time elapsed and MTTF
+            if (myALU->iteration == myALU->MTTF) {
+                myALU->failed++;         // Increment the number of failed instances
+                myALU->currentWorking--;// Decrement the number of working ALUs
+                // Update the last check time to the current time
+                myALU->iteration = 0;
+                if (myALU->currentWorking >= myALU->n) {
+                    alu();
+                    printf("One ALU failed but we still have %d working\n", myALU->currentWorking);
+                } else {
+                    printf("All ALU NMR have failed! ALU has 1 failed\n");
+                }
+            } else {
+                alu();
+                printf("ALU success! %d ALUs are working\n", myALU->currentWorking);
+            }
+        } else {
+            printf("All ALU NMR have failed! ALU has 2 failed\n");
+        }
+    } else { // there is a spare implementation not NMR
+        if (myALU->currentWorking > 0) {
+
+            // Check if a failure will occur based on time elapsed and MTTF
+            if (myALU->iteration == myALU->MTTF) {
+                myALU->failed++;         // Increment the number of failed instances
+                myALU->currentWorking--;// Decrement the number of working ALUs
+                // Update the last check time to the current time
+                myALU->iteration = 0;
+                if (myALU->currentWorking > 0) {
+                    alu();
+                    printf("One ALU failed but we still have %d spares working\n", myALU->currentWorking);
+                } else {
+                    printf("All ALU Spares have failed! ALU has failed\n");
+                }
+            } else {
+                alu();
+                printf("ALU success! %d ALUs are working\n", myALU->currentWorking);
+            }
+        } else {
+            printf("All ALU Spares have failed! ALU has failed\n");
+        }
+    }
+	myALU->iteration++;
 }
 
 void registerOut()
@@ -420,6 +512,29 @@ void writeBack() // no banco de registradores
 
 int main () 
 {
+	
+
+    // Initialize nmrALU at runtime
+    myALUnMR[0].MTTF = 7003;
+    myALUnMR[0].failed = 0;
+    myALUnMR[0].iteration = 0;  // Initialize iteration
+    myALUnMR[0].isNMR = true;
+    myALUnMR[0].n = 3;
+    myALUnMR[0].m = 5;
+    myALUnMR[0].currentWorking = 5;
+
+	// Initialize spareALU at runtime
+    spareALU[0].MTTF = 7003;
+    spareALU[0].failed = 0;
+    spareALU[0].iteration = 0;  // Initialize iteration
+    spareALU[0].isNMR = false;
+    spareALU[0].n = 3;
+    spareALU[0].m = 3;
+    spareALU[0].currentWorking = 3;
+
+	
+
+
 	printf("\n ---------== Initial value of register file and memory file ==--------\n\n");
 	printDataMemory(); //  imprime estado da Memoria
 	printRegisters();  //  imprime estado dos registradores
@@ -498,7 +613,11 @@ int main ()
 		*/
 		printf("------------------=EXECUTE=------------------\n");
 		registerOut(); // returns output values ​​from registers to buffers (global variables)
-		alu();         // ALU arithmetic operations
+		//alu();         // ALU arithmetic operations
+        // Execute ALU helper at each cycle
+        ALU_helper(myALUnMR);
+		//ALU_helper(spareALU);
+		//alu();
 		if(strcmp(instructionAssembly, "j") == 0)
 		{
 			PC = strtol(addressBinary, NULL, 2);
