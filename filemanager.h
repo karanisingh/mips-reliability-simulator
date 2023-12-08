@@ -26,7 +26,7 @@ void printPointer(char *string, int length)
 }
 
 //verifica se a linha eh um label em Assembly - retorna 0 se não eh
-int isLabel (char *inputline)
+int isLabel(char *inputline)
 {
 	char ch;
 	int i=0;
@@ -112,7 +112,7 @@ void readAssembly ()
 {
 	FILE *assemblyFile;
 	// open a file
-	assemblyFile = fopen("./assembly.txt", "r");
+	assemblyFile = fopen("./sum_even_2000.txt", "r");
 		
 	/* fopen returns 0, the NULL pointer, on failure */
 	if ( assemblyFile == NULL )
