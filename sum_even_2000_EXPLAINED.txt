@@ -1,0 +1,30 @@
+# MIPS Assembly program that calculates the sum of even numbers
+# up to 2000, should take around 1000 iterations. Stores in mem
+# address 3
+#
+# Uses a combination of R-type, I-type instructions
+
+.text
+main:
+    addi $t0, $zero, 0              # Initialize the counter to 0
+    addi $t1, $zero, 0              # Initialize the sum to 0
+    addi $t2, $zero, 2000           # Limit for the sum calculation
+    addi $t8, $zero, 0x4            # Locatio for the sum
+    sw $t0, ($t8)
+    j loop
+
+skip:
+    addi $t0, $t0, 1       # Increment the counter
+    sw $t9, ($t8)          # Store the sum in mem addr 1
+    bne $t0, $t2, loop     # If the counter is less than 2000, continue the loop
+    j end
+
+loop:
+    lw	$t9, ($t8)         # Load the sum in register $t9
+    andi $t3, $t0, 1       # Check if the counter is even by looking at the least significant bit
+    bne $t3, $zero, skip   # If the number is odd (LSB is 1), skip the addition
+    add $t9, $t9, $t0      # Add the even counter to the sum
+    j skip
+
+end:
+    addi $v0, $zero, 32

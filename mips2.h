@@ -3,6 +3,56 @@
 #ifndef MIPS2
 #define MIPS2
 
+
+void reverse(char str[], int length) {
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
+char* itoa(int num, char* str, int base) {
+    int i = 0;
+    int isNegative = 0;
+
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    if (num == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+
+    // In standard itoa(), negative numbers are handled only with base 10.
+    // Otherwise numbers are considered unsigned.
+    if (num < 0 && base == 10) {
+        isNegative = 1;
+        num = -num;
+    }
+
+    // Process individual digits
+    while (num != 0) {
+        int rem = num % base;
+        str[i++] = (rem > 9)? (rem - 10) + 'a' : rem + '0';
+        num = num / base;
+    }
+
+    // If number is negative, append '-'
+    if (isNegative)
+        str[i++] = '-';
+
+    str[i] = '\0'; // Append string terminator
+
+    // Reverse the string
+    reverse(str, i);
+
+    return str;
+}
+
 //Global Variables
 extern char inputLine[33];
 
@@ -35,7 +85,7 @@ extern char memWrite;
 extern char memToReg;
 extern char branch;
 
-extern char instructionAssembly[6];     // G Var for Assembly
+extern char instructionAssembly[16];     // G Var for Assembly
 extern int PC;         // Program Counter
 
 // fim da declaracao de Global Variables
@@ -242,194 +292,6 @@ int isBinary (char ch)
 	}
 	return output;
 }
-/*
-void addToBinary() // R
-{
-	strcpy (functBinary,"100000");	 	// fixo para o add
-}
-
-void addiToBinary()  // I
-{
-	strcpy (opcodeBinary,"001000");
-}
-
-void addiuToBinary()  // IU
-{
-	strcpy (opcodeBinary,"001001");
-}
-
-void adduToBinary() // R   -- revisar
-{
-	strcpy (functBinary,"100001");	// fixo para o addu
-}
-
-void andToBinary() //  R
-{
-	strcpy (functBinary,"100100");
-}
-
-void andiToBinary() // I
-{
-	strcpy (opcodeBinary,"001100");
-}
-		
-void beqToBinary() // I
-{
-	strcpy (opcodeBinary,"000100");
-}
-
-void bneToBinary() // I
-{
-	strcpy (opcodeBinary,"000101");
-}
-
-void jToBinary()  // J  -atencao
-{
-	int i = 2; //  recorta o label
-	do {
-		addressAssembly[i-2] = inputLine[i];
-		i++;
-	} while (inputLine[i] != '\n');
-	
-	int label;
-	label = searchLabel(addressAssembly);
-	itoa(label,addressAssembly,10);
-	
-	charTo26BitsU(addressAssembly, addressBinary);
-	strcpy (opcodeBinary,"000010");
-}
-
-void jalToBinary()  // J   -atencao
-{
-	strcpy (opcodeBinary,"000011");
-	int i = 4; //  recorta o label
-	do {
-		addressAssembly[i-4] = inputLine[i];
-		i++;
-	} while (inputLine[i] != '\n');
-	
-	int label;
-	label = searchLabel(addressAssembly);
-	itoa(label,addressAssembly,10);
-	
-	charTo26BitsU(addressAssembly, addressBinary);
-}
-
-void jrToBinary()   // R -  usar rs 
-{					
-	strcpy (functBinary,"001000");	
-	strcpy (opcodeBinary,"000000");	 	// fixo para R
-	strcpy (shamtBinary,"00000"); 	
-	strcpy (rsBinary,"00000"); 
-	strcpy (rdBinary,"00000"); 	// fixo para R
-}
-
-void lbuToBinary() // I
-{
-	strcpy (opcodeBinary,"100100");
-}
-
-void lhuToBinary() // I  Unsigned
-{
-	strcpy (opcodeBinary,"100101");
-}
-
-void llToBinary() // I
-{
-	strcpy (opcodeBinary,"110000");
-}
-
-void luiToBinary() // I  C2?  Load Upper Immed  - nao eh Unsigned
-{
-	strcpy (opcodeBinary,"001111");
-}
-
-void lwToBinary() // I
-{
-	strcpy (opcodeBinary,"100011");
-}
-
-void norToBinary()   // R
-{
-	strcpy (functBinary,"100111");	
-}	
-
-void orToBinary()   // R
-{
-	strcpy (functBinary,"100101");	
-}	
-
-void oriToBinary() // I
-{
-	strcpy (opcodeBinary,"001101");
-}		
-
-void sltToBinary() // R
-{
-	strcpy (functBinary,"101010");	
-}
-
-void sltiToBinary() // I
-{
-	strcpy (opcodeBinary,"001010");	
-}
-
-void sltiuToBinary() // I
-{
-	strcpy (opcodeBinary,"001011");	
-}
-
-void sltuToBinary() // R   e U how???
-{
-	strcpy (functBinary,"101011");	
-}
-
-void sllToBinary() // R    -- atencao tem shamt
-{
-	strcpy (opcodeBinary,"000000");
-	strcpy (functBinary,"000000");
-	strcpy (rsBinary ,"00000");
-	charTo5BitsU (immediateAssembly, shamtBinary ); //escreve no shamt
-}
-
-void srlToBinary() // R   -- atencao tem shamt
-{
-	strcpy (opcodeBinary,"000000");
-	strcpy (functBinary,"000010");	
-	strcpy (rsBinary ,"00000");
-	charTo5BitsU (immediateAssembly, shamtBinary ); //escreve no shamt
-}
-
-void sbToBinary() // I
-{
-	strcpy (opcodeBinary,"101000");	
-}		
-
-void scToBinary() // I
-{
-	strcpy (opcodeBinary,"111000");	
-}		
-
-void shToBinary() // I
-{
-	strcpy (opcodeBinary,"101001");	
-}			
-
-void swToBinary() // I
-{
-	strcpy (opcodeBinary,"101011");	
-}	
-
-void subToBinary() // R
-{
-	strcpy (functBinary,"100010");	
-}
-
-void subuToBinary() // R  --- atencao funcao R! mas eh U?
-{
-	strcpy (functBinary,"100011");	
-}
-*/
 
 // recebe duas strings por referencia, a primeira eh a entrada ("numeros")
 //  a segunda devolve a string de binário UNSIGNED de 5 bits
@@ -539,7 +401,7 @@ void charTo32Bits(char *charInput, char *charOutput)
 	}
 	else
 	{
-		printf("Debug: Erro na funcao charTo32Bits!");
+		printf("Debug: Error in charTo32Bits!");
 		strcpy(charOutput, "XXXXXXXXXXXXXXXX");  // saida de erro
 	}
 }
@@ -709,7 +571,7 @@ void addToAssembly() // R
 	regWrite = '1';
 	regDst = '1';
 	AluSrc = '0';
-	AluOp = '0';
+	AluOp = '2';
 	memRead = '0';
 	memWrite = '0';
 	memToReg = '0';
@@ -777,7 +639,7 @@ void addiToAssembly()  // I
 	regWrite = '1';
 	regDst = '0';
 	AluSrc = '1';
-	AluOp = '0';
+	AluOp = '2';
 	memRead = '0';
 	memWrite = '0';
 	memToReg = '0';
@@ -787,6 +649,14 @@ void addiToAssembly()  // I
 void andiToAssembly()  // I
 {
 	strcpy(instructionAssembly, "andi");
+	regWrite = '1';
+	regDst = '0';
+	AluSrc = '1';
+	AluOp = '0';
+	memRead = '0';
+	memWrite = '0';
+	memToReg = '0';
+	branch = '0';
 }
 
 void beqToAssembly()  // I
@@ -795,7 +665,7 @@ void beqToAssembly()  // I
 	regWrite = '0';
 	regDst = '0';
 	AluSrc = '0';
-	AluOp = '1';
+	AluOp = '6';
 	memRead = '1';
 	memWrite = '0';
 	memToReg = '0';
@@ -805,6 +675,14 @@ void beqToAssembly()  // I
 void bneToAssembly()  // I
 {
 	strcpy(instructionAssembly, "bne");
+	regWrite = '0';
+	regDst = '0';
+	AluSrc = '0';
+	AluOp = '6';
+	memRead = '0';
+	memWrite = '0';
+	memToReg = '0';
+	branch = '1';
 }
 
 void lbuToAssembly()  // I parenteses
@@ -833,7 +711,7 @@ void lwToAssembly()    // I parenteses
 	regWrite = '1';
 	regDst = '0';
 	AluSrc = '1';
-	AluOp = '0';
+	AluOp = '2';
 	memRead = '1';
 	memWrite = '0';
 	memToReg = '1';
@@ -876,7 +754,7 @@ void swToAssembly()  // I parenteses
 	regWrite = '0';
 	regDst = '0';
 	AluSrc = '1';
-	AluOp = '0';
+	AluOp = '2';
 	memRead = '0';
 	memWrite = '1';
 	memToReg = '0';
@@ -886,6 +764,15 @@ void swToAssembly()  // I parenteses
 void jToAssembly()  // J
 {
 	strcpy(instructionAssembly, "j");
+	regWrite = '0';
+	regDst = '0';
+	AluSrc = '0';
+	AluOp = '2';
+	memRead = '0';
+	memWrite = '0';
+	memToReg = '0';
+	branch = '0';
+
 }
 
 void jalToAssembly()  // J
@@ -921,7 +808,7 @@ void instructionR ()
 	} else if (!(strcmp(functBinary,"100011"))){
 		subuToAssembly();  //RU
 	} else {
-		printf("ERRO! Funcao instructionR! Instrucao nao Reconhecida");    //caso de Erro, nenhum instruction compativel encontrado
+		printf("ERRO! R function not recognized");    //caso de Erro, nenhum instruction compativel encontrado
 	}	
 }
 
@@ -932,7 +819,7 @@ void instructionJ ()
 	} else if (!(strcmp(opcodeBinary,"000011"))){
 		jalToAssembly();   		 
 	} else {
-		printf("ERRO! Funcao instructionJ! Instrucao nao Reconhecida");    //caso de Erro, nenhum instruction compativel encontrado
+		printf("ERRO! J Function not recognized");    //caso de Erro, nenhum instruction compativel encontrado
 
 	}		
 }
@@ -972,7 +859,7 @@ void instructionI ()
 	} else if (!(strcmp(opcodeBinary,"101011"))){
 		swToAssembly();    // I ??
 	} else {
-		printf("ERRO! Funcao instructionI! Instrucao nao Reconhecida");    //caso de Erro, nenhum instruction compativel encontrado
+		printf("ERRO! Instruction not recognized");    //caso de Erro, nenhum instruction compativel encontrado
 
 	}	
 }

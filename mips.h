@@ -3,6 +3,59 @@
 #ifndef MIPS
 #define MIPS
 
+#include <limits.h>
+#include <stdlib.h>
+
+void reverse(char str[], int length) {
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
+char* itoa(int num, char* str, int base) {
+    int i = 0;
+    int isNegative = 0;
+
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    if (num == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+
+    // In standard itoa(), negative numbers are handled only with base 10.
+    // Otherwise numbers are considered unsigned.
+    if (num < 0 && base == 10) {
+        isNegative = 1;
+        num = -num;
+    }
+
+    // Process individual digits
+    while (num != 0) {
+        int rem = num % base;
+        str[i++] = (rem > 9)? (rem - 10) + 'a' : rem + '0';
+        num = num / base;
+    }
+
+    // If number is negative, append '-'
+    if (isNegative)
+        str[i++] = '-';
+
+    str[i] = '\0'; // Append string terminator
+
+    // Reverse the string
+    reverse(str, i);
+
+    return str;
+}
+
+
 // struct que armazenará cada label
 struct JumpTable{
 	int line;
@@ -19,7 +72,7 @@ extern char rtBinary[6];
 extern char rdBinary[6];
 extern char shamtBinary[6];
 extern char functBinary[7];
-extern struct JumpTable JumpAdressTable[20]; //array de structs para armazenamento de labels
+extern struct JumpTable JumpAddressTable[20]; //array de structs para armazenamento de labels
 
 extern char immediateBinary[17];   // exclusive type I
 extern char addressBinary[27]; 	// exclusive type J
@@ -171,8 +224,8 @@ void not (char *string)
 	} while (string[i] != '\0');
 }
 
-/* Função que percorre o arquivo todo colocando os labels no array de registros JumpAdressTable */
-void fillJumpAdressTable(){
+/* Função que percorre o arquivo todo colocando os labels no array de registros JumpAddressTable */
+void fillJumpAddressTable(){
     
     char line[129];
     char label[16];
@@ -180,8 +233,9 @@ void fillJumpAdressTable(){
     unsigned long numberOfLines = countLine();
     FILE *file;
     
-    file = fopen("./assembly.txt", "r");
-    
+    // file = fopen("./assembly.txt", "r");
+	file = fopen("./sum_even_2000.txt", "r");
+
     if (file == NULL){
         printf( "\nNao pode abrir o arquivo!\n" );
     }
@@ -203,8 +257,8 @@ void fillJumpAdressTable(){
 	                        label[i] = '\0';
 	                    }
 	                }while(ch != ':');
-	                strcpy(JumpAdressTable[jumpTableCounter].label, label);
-	                JumpAdressTable[jumpTableCounter].line = lineCounter;
+	                strcpy(JumpAddressTable[jumpTableCounter].label, label);
+	                JumpAddressTable[jumpTableCounter].line = lineCounter;
 	                jumpTableCounter++;
             }
             lineCounter++;
@@ -219,8 +273,8 @@ int searchLabel(char label[]){
 	int line, i = 0, found = 0;
 
 	while(i < 20 && !found){
-		if(!strcmp(label, JumpAdressTable[i].label)){ // achou
-			line = JumpAdressTable[i].line;
+		if(!strcmp(label, JumpAddressTable[i].label)){ // achou
+			line = JumpAddressTable[i].line;
 			found = 1;
 		}
 		i++;
@@ -318,9 +372,15 @@ void concatenateILabel(char *outputLine)	//generates I type line
 	offsetLabel = searchLabel(labelAssembly);
 	printf("\nlinha do label: %d - PC: %d", offsetLabel, pcAssembly);
 	offsetLabel = (offsetLabel - pcAssembly - 1);     // 
-	sprintf(addressAssembly , "%d" , offsetLabel );	
-	charTo16Bits(addressAssembly, addressBinary);
-	strcat (outputLine, addressBinary);  // converte Label
+	sprintf(addressAssembly , "%d" , offsetLabel);	
+	printf("ADDR: %s\n", addressAssembly);
+	char karnlol[17];
+	//charTo16Bits(addressAssembly, addressBinary);
+	charTo16Bits(addressAssembly, karnlol);
+	karnlol[16]='\0';
+
+	//strcat (outputLine, addressBinary);  // converte Label
+	strcat (outputLine, karnlol);  // converte Label
 }
 
 void concatenateIU(char *outputLine)	//generates I type line
@@ -639,7 +699,7 @@ void ripDataAssembly (char *myLine)    	// primeira versao - soh extrai registro
 		if ( ch == ',' ) {    // se o char atual eh virgula, checa se o proximo eh numerico
 			offset++;
 			chProx = myLine[offset];
-			isNum = isNumeric(chProx);	
+			isNum = isNumeric(chProx);
 		}
 	} while ( !isNum && ch != '\0' );  // soh sai desse loop qdo \0 ou encontrar uma virgula seguida de um numerico
 	
@@ -656,7 +716,7 @@ void ripDataAssembly (char *myLine)    	// primeira versao - soh extrai registro
 			immediate[tamanho] = '\0';
 	}
 	
-	
+
 	// rip Label (bne e beq)
 	offset = 0;  //importante zerar o offset pois varreremos novamente a linha
 	do
@@ -687,19 +747,27 @@ void ripDataAssembly (char *myLine)    	// primeira versao - soh extrai registro
 		
 	} while ( ch != '\0' );  // soh sai desse loop qdo \0 ou encontrar uma virgula seguida de um numerico
 	
+
+	char karn[6];
+	strcpy(karn, immediate);
+
 	if (!(strcmp(rs,"$ze")))   // gambiarra pra converter $ze para $zero
 		strcpy(rs,"$zero");
+
 	if (!(strcmp(rt,"$ze")))
 		strcpy(rt,"$zero");
-	if (!(strcmp(rd,"$ze")))
+
+	if (!(strcmp(rd,"$ze")))		
 		strcpy(rd,"$zero");
-	
+
 	// os registros ja estao extraidos, e serao passados em forma de binario 
 	strcpy ( rsAssembly, rs); //copiando variavel local pra global
 	strcpy ( rtAssembly, rt);
 	strcpy ( rdAssembly, rd);
-	strcpy ( immediateAssembly, immediate);
+	strcpy ( immediateAssembly, karn);
 	strcpy ( labelAssembly, label);
+
+	
 	
 }
 
@@ -825,7 +893,7 @@ void charTo16BitsU (char *charInput, char *charOutput)
 void charTo16Bits (char *charInput, char *charOutput)
 {
 
-	int num=atoi(charInput);   //num receberá o char passado para int	
+	int num=atoi(charInput);   //num receberá o char passado para int
 	
 	if (-32768 <= num < 32768)
 	{
