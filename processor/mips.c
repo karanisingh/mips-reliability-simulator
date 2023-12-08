@@ -13,10 +13,10 @@ Lucas Pinheiro - pinheiro.lucasaugusto@gmail.com
 
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>  //strcpy()
-#include "mips2.h"
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>  //strcpy()
+#include "mips_helper.h"
 
 int binaryStringToInt(char* bin){
 	return strtol(bin, NULL, 2);
@@ -159,14 +159,14 @@ registers registerFile[32] = {  //32 registradores, por enquanto 5 pra testar
 void printRegisters()
 {	
 	printf("\n ### Registers ###\n"); //
-	printf("$zero \t(%s): d%d, (b%s)\n", registerFile[0].RegisterNumber, strtol(registerFile[0].registerData, NULL, 2),registerFile[0].registerData);
-	printf("$v0 \t(%s): d%d, (b%s)\n", registerFile[2].RegisterNumber, strtol(registerFile[2].registerData, NULL, 2),registerFile[2].registerData);
-	printf("$t0 \t(%s): d%d, (b%s)\n", registerFile[8].RegisterNumber, strtol(registerFile[3].registerData, NULL, 2),registerFile[8].registerData);
-	printf("$t1 \t(%s): d%d, (b%s)\n", registerFile[9].RegisterNumber, strtol(registerFile[8].registerData, NULL, 2),registerFile[9].registerData);
-	printf("$t2 \t(%s): d%d, (b%s)\n", registerFile[10].RegisterNumber, strtol(registerFile[9].registerData, NULL, 2),registerFile[10].registerData);
-	printf("$t3 \t(%s): d%d, (b%s)\n", registerFile[11].RegisterNumber, strtol(registerFile[10].registerData, NULL, 2),registerFile[11].registerData);
-	printf("$t8 \t(%s): d%d, (b%s)\n", registerFile[24].RegisterNumber, strtol(registerFile[24].registerData, NULL, 2),registerFile[24].registerData);
-	printf("$t9 \t(%s): d%d, (b%s)\n", registerFile[25].RegisterNumber, strtol(registerFile[25].registerData, NULL, 2),registerFile[25].registerData);
+	printf("$zero \t(%s): d%ld, (b%s)\n", registerFile[0].RegisterNumber, strtol(registerFile[0].registerData, NULL, 2),registerFile[0].registerData);
+	printf("$v0 \t(%s): d%ld, (b%s)\n", registerFile[2].RegisterNumber, strtol(registerFile[2].registerData, NULL, 2),registerFile[2].registerData);
+	printf("$t0 \t(%s): d%ld, (b%s)\n", registerFile[8].RegisterNumber, strtol(registerFile[3].registerData, NULL, 2),registerFile[8].registerData);
+	printf("$t1 \t(%s): d%ld, (b%s)\n", registerFile[9].RegisterNumber, strtol(registerFile[8].registerData, NULL, 2),registerFile[9].registerData);
+	printf("$t2 \t(%s): d%ld, (b%s)\n", registerFile[10].RegisterNumber, strtol(registerFile[9].registerData, NULL, 2),registerFile[10].registerData);
+	printf("$t3 \t(%s): d%ld, (b%s)\n", registerFile[11].RegisterNumber, strtol(registerFile[10].registerData, NULL, 2),registerFile[11].registerData);
+	printf("$t8 \t(%s): d%ld, (b%s)\n", registerFile[24].RegisterNumber, strtol(registerFile[24].registerData, NULL, 2),registerFile[24].registerData);
+	printf("$t9 \t(%s): d%ld, (b%s)\n", registerFile[25].RegisterNumber, strtol(registerFile[25].registerData, NULL, 2),registerFile[25].registerData);
 
 }
 

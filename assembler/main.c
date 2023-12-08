@@ -14,7 +14,7 @@ Lucas Pinheiro - pinheiro.lucasaugusto@gmail.com
 #include <stdlib.h>
 #include <string.h>  //strcpy()
 #include "filemanager.h"
-#include "mips.h"
+#include "main.h"
 #define BUFFER_SIZE 129   //line buffer max size
 
 

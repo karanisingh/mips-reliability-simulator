@@ -1,7 +1,7 @@
 // Header that defines registers, functions and constants for a MIPS processor
-//mips.h
-#ifndef MIPS
-#define MIPS
+//main.h
+#ifndef MAIN
+#define MAIN
 
 #include <limits.h>
 #include <stdlib.h>

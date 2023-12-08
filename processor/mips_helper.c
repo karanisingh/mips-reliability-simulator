@@ -1,8 +1,9 @@
-// Header that defines registers, functions and constants for a MIPS processor
-//mips2.h
-#ifndef MIPS2
-#define MIPS2
+// mips_helper.c
 
+#include "mips_helper.h"
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>  //strcpy()
 
 void reverse(char str[], int length) {
     int start = 0;
@@ -52,135 +53,6 @@ char* itoa(int num, char* str, int base) {
 
     return str;
 }
-
-//Global Variables
-extern char inputLine[33];
-
-extern char opcodeBinary[7];        // G Var for Binary
-extern char rsBinary[6];
-extern char rtBinary[6];
-extern char rdBinary[6];
-extern char shamtBinary[6];
-extern char functBinary[7];
-
-extern char immediateBinary[17];   // exclusive type I
-extern char addressBinary[27]; 	// exclusive type J
-
-// buffers de saida
-extern char signExtend[33];
-extern char reg1Out[33];   // saidas dos banco de registradores
-extern char reg2Out[33];
-extern char aluOut[33];    // saida da ALU principal
-extern char memOut[33];	// saida da memoria
-
-
-// sinais de controle
-extern char regWrite;
-extern char regDst;
-extern char AluSrc;
-extern char AluOp;
-extern char AluZero;
-extern char memRead;
-extern char memWrite;
-extern char memToReg;
-extern char branch;
-
-extern char instructionAssembly[16];     // G Var for Assembly
-extern int PC;         // Program Counter
-
-// fim da declaracao de Global Variables
-
-//Core Instruction Set (tipo + 6bits)
-/*
-// R Format Instructions - 12 types (Tipo + 6 bits Funct) (opcode fixo 000000)
-add = R100000 	// 0/20 *
-addu = R100001 	// 0/21
-and = R100100 	// 0/24
-jr = R001000	// 0/08
-nor = R100111 	// 0/27
-or  = R100101 	// 0/25
-slt = R101010 	// 0/2a
-sltu = R101011	// 0/2b
-sll  = R000000	// 0/00
-srl  = R000010	// 0/02
-sub = R100010 	// 0/22
-subu = R100011  // 0/23
-
-// I Format Instructions - 17 types (Tipo + 6 bits opcode)
-addi = I001000 		// 8
-addiu = I001001		// 9
-andi = I001100		// c
-beq = I000100 		// 4
-bne = I000101		// 5
-lbu = I00100100 	// 24 
-lhu = I100101 		// 25
-ll = I110000		// 30
-lui = I001111		// f
-lw = I100011 		// 23
-ori = I001101 		// d
-slti = I001010 		// a
-sltiu = I001011 	// b  
-sb = I101000		// 28
-sc = I111000		// 38
-sh = I101001		// 29
-sw = I101011		// 2b
-
-// J Format Instructions - 2 types (tipo + 6 bits opcode) 
-j = J000010 		// 2
-jal = J000011 		// 3
-
-*/
-//declaracao de funcoes
-void charTo16Bits (char *charInput, char *charOutput);
-void charTo16BitsU (char *charInput, char *charOutput);
-void charTo5BitsU (char *charInput, char *charOutput);
-void charTo26BitsU (char *charInput, char *charOutput); // usada nas funcoes J  //ou nao?
-void charTo32Bits(char *charInput, char *charOutput);
-void ripBinaryLabel();
-void binary16ToChar(char *charInput, char *charOutput);
-void binary5ToCharU(char *charInput, char *charOutput);  // converte binarios em decimal char C2
-void binary16ToCharU(char *charInput, char *charOutput); // converte binarios em decimal char Unsigned
-int binary32ToChar(char *charInput, char *charOutput);
-void not (char *string); // inverte 0 pra 1 e vice-versa
-
-// # funcoes Assembly -> Binary
-void registerToAssembly(char *registerBinary, char *registerAssembly);
-void instructionR ();
-void instructionI ();
-void instructionJ ();
-
-
-// cabecalho das funcoes individuais binary -> Assembly
-void addToAssembly(); // R
-void adduToAssembly(); // R
-void andToAssembly(); // R
-void jrToAssembly(); // R
-void norToAssembly(); // R
-void orToAssembly(); // R
-void sltToAssembly(); // R
-void sltuToAssembly(); // R
-void sllToAssembly(); // R
-void srlToAssembly(); // R
-void subToAssembly(); // R
-void subuToAssembly(); // R
-void addiToAssembly();  // I
-void andiToAssembly();  // I
-void beqToAssembly();  // I parenteses
-void bneToAssembly();  // I parenteses
-void lbuToAssembly();  // I parenteses
-void lhuToAssembly();  // I parenteses
-void llToAssembly();  // I parenteses - rever
-void luiToAssembly();    // I
-void lwToAssembly();    // I
-void oriToAssembly();    // I
-void sltiToAssembly();    // I
-void sltiuToAssembly();    // IU
-void sbToAssembly();  // I parenteses
-void scToAssembly();  // I parenteses
-void shToAssembly();  // I parenteses
-void swToAssembly();  // I parenteses
-void jToAssembly();  // J
-void jalToAssembly();  // J
 
 //recebe duas strings por referencia, sendo a primeiro uma string em binário 32bits
 //segunda("a saída") em uma string representando inteiro
@@ -860,8 +732,5 @@ void instructionI ()
 		swToAssembly();    // I ??
 	} else {
 		printf("ERRO! Instruction not recognized");    //caso de Erro, nenhum instruction compativel encontrado
-
 	}	
 }
-
-#endif
