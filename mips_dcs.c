@@ -180,12 +180,6 @@ registers registerFile[32] = {  //32 registradores, por enquanto 5 pra testar
 
 ALU_Reliability myALUnMR[1]; // Change the array size to 1
 ALU_Reliability spareALU[1];
-/*
-ALU_Reliability myALU[0] = { // int MTTF, int failed, clock_t currentime, bool isNMR, int n, intm, int currentWOkring, intCurrentlyRunning
-	{ 500,0, clock(), true, 3, 4, 4, 1}
-};
-*/
-
 
 
 void printRegisters()
