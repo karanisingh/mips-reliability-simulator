@@ -30,15 +30,26 @@ int fail_simulate(double t, double MTTF) {
     } while (p > L);
 
     return (random_value < k - 1);
-    
-
+}
 
 //////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-
-
 //ALU_R ALU_RELIABILITY = { 2000, 0, 10, 0, 0, 0 }; // This should be uncommented out when we want spare redundancy implemented
 ALU_R ALU_RELIABILITY = { 500, 0, 10, 6, 10, 0 };
 
@@ -46,20 +57,7 @@ ALU_R ALU_RELIABILITY = { 500, 0, 10, 6, 10, 0 };
 
 int ALU_simFailure()
 {
-    // update lifetime 
-    ALU_RELIABILITY.lifetime++;
-
-    // int to hold whether a failure happened for logging
-    int failure=0;
-
-//ALU_R ALU_RELIABILITY = { 2000, 0, 10, 0, 0, 0 }; // This should be uncommented out when we want spare redundancy implemented
-ALU_R ALU_RELIABILITY = { 500, 0, 10, 6, 10, 0 };
-
-
-
-int ALU_simFailure()
-{
-    // update lifetime \
+    // update lifetime     
     ALU_RELIABILITY.lifetime++;
 
     // int to hold whether a failure happened for logging
@@ -80,70 +78,6 @@ int ALU_simFailure()
                 log_write("ALU NMR experienced %d total fails, there are %d remaining", failed, ALU_RELIABILITY.working);
             }
         }
- 
-
-    }
-    else            // if STANDBY SPARING
-    {
-        // one component can fail at a time
-        if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
-            log_write("ALU Spare %d of %d structure fail", ALU_RELIABILITY.spareId, ALU_RELIABILITY.total);
-            cycle += 1;                     // 1 cycle penalty
-            ALU_RELIABILITY.spareId++;      // move to the next spare
-            failure = 1;                    // failure flag
-            ALU_RELIABILITY.lifetime = 1;   // reset lifetime (to 1, since spare redoes action)
-        }
-    }
-
-    if(ALU_isFailed())
-    {
-        log_write("ALU unrecoverable failure");
-        return 1;
-    }
-    else if(failure){
-        log_write("ALU recovered from a failure");
-        return 0;
-    }
-
-    return 0;
-}
-
-int ALU_isFailed()
-{
-    if(ALU_RELIABILITY.N)
-    {
-        if(ALU_RELIABILITY.working >= ALU_RELIABILITY.N)
-            return 0;
-        else   
-            return 1;
-    }
-    else
-    {
-        if(ALU_RELIABILITY.spareId < ALU_RELIABILITY.total)
-            return 0;
-        else    
-            return 1;
-    }
-
-}
-
-    if(ALU_RELIABILITY.N>0)       //if NMR
-    {
-        // one component can fail at a time
-        if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
-            log_write("ALU NMR structure fail");
-            cycle += 1;                     // 1 cycle penalty
-            ALU_RELIABILITY.spareId++;      // move to the next spare
-            failure = 1;                    // failure flag
-            ALU_RELIABILITY.lifetime = 1;   // reset lifetime (to 1, since spare redoes action)
-            ALU_RELIABILITY.working--;
-            if (ALU_RELIABILITY.working < ALU_RELIABILITY.total) {
-                int failed = ALU_RELIABILITY.total-ALU_RELIABILITY.working;
-                log_write("ALU NMR experienced %d total fails, there are %d remaining", failed, ALU_RELIABILITY.working);
-            }
-        }
- 
-
     }
     else            // if STANDBY SPARING
     {
