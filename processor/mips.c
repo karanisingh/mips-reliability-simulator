@@ -17,6 +17,8 @@ Lucas Pinheiro - pinheiro.lucasaugusto@gmail.com
 // #include <stdlib.h>
 // #include <string.h>  //strcpy()
 #include "mips_helper.h"
+#include "mips_reliability.h"
+#include "reliability_logging.h"
 
 int binaryStringToInt(char* bin){
 	return strtol(bin, NULL, 2);
@@ -54,7 +56,8 @@ char memToReg = '0';
 char branch = '0';
 
 char instructionAssembly[16];     // G Var for Assembly
-int PC = 0;         		// Program Counter
+int PC = 0;         			// Program Counter
+int cycle = 0;
 
 struct instruction {
 	int instructionAddress;
@@ -206,8 +209,9 @@ void signExtender()
 	printf("%s\n", signExtend);
 }
 
-void alu()
+int alu()
 {
+	
 	printf("\n");
 	printf("Alu\n");
 	char aluSource2[33];
@@ -264,7 +268,8 @@ void alu()
 	
 	itoa(result, temp1, 10);  // convert to text
 	charTo32Bits(temp1, aluOut);  // converts it to binary text and gives the output
-	
+
+	return ALU_reliabilityUpdate();
 }
 
 void registerOut()
@@ -340,12 +345,12 @@ int verifyBranch()
 			return signExtInteger;
 		}
 		else{
-			printf("Not BRANCHING, next \n");
+			printf("Not BRANCHING, next ");
 			return 0;
 		}
 	}
 	
-	printf("Not BRANCHING, next \n");
+	printf("Not BRANCHING, next ");
 	return 0;
 }
 
@@ -420,6 +425,9 @@ void writeBack() // no banco de registradores
 
 int main () 
 {
+	log_init("reliability.log");
+	log_write("PROGRAM START\n");
+
 	printf("\n ---------== Initial value of register file and memory file ==--------\n\n");
 	printDataMemory(); //  imprime estado da Memoria
 	printRegisters();  //  imprime estado dos registradores
@@ -428,8 +436,8 @@ int main ()
 	getc(stdin);
 
 	inputLine[0] = '\0';  // zera a linha de entrada
-	int PC;  // nosso Program Counter
-	int cycle = 0;
+	//int PC;  // nosso Program Counter
+	//int cycle = 0;
 	
 	for ( PC = 0 ; PC < INSTRUCTION_LENGTH; PC++ )  //performs a cycle, until the end of the instructions, the number of instructions is fixed
 	{
@@ -448,8 +456,8 @@ int main ()
 		*
 		*/ 
 		printf("------------------=INSTRUCTION FETCH=------------------");
-		strcpy(inputLine, instructionMemory[PC].instructionLine); //copies the instruction to a temporary buffer
 		printf("\nInstruction %d:\n", instructionMemory[PC].instructionAddress);  //prints the instruction index
+		strcpy(inputLine, instructionMemory[PC].instructionLine); //copies the instruction to a temporary buffer
 		printf("%s --> (%s)\n", assemblyLines[PC].instructionLine, inputLine);
 		printf("\n\n");
 
@@ -498,7 +506,12 @@ int main ()
 		*/
 		printf("------------------=EXECUTE=------------------\n");
 		registerOut(); // returns output values ​​from registers to buffers (global variables)
-		alu();         // ALU arithmetic operations
+		if(alu())         // ALU arithmetic operations
+		{
+			printf("\n\n\nUNRECOVERABLE FAILURE FROM ALU\n\n\n");
+			break;
+		}
+
 		if(strcmp(instructionAssembly, "j") == 0)
 		{
 			PC = strtol(addressBinary, NULL, 2);

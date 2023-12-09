@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "mips2.h": "c",
-        "mips_helpers.h": "c"
+        "mips_helpers.h": "c",
+        "reliability_logging.h": "c"
     }
 }

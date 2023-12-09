@@ -41,6 +41,7 @@ extern char branch;
 
 extern char instructionAssembly[16];     // G Var for Assembly
 extern int PC;         // Program Counter
+extern int cycle;
 
 // fim da declaracao de Global Variables
 
