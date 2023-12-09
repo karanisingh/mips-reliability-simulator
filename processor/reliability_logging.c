@@ -1,5 +1,6 @@
 // logging.c
 #include "reliability_logging.h"
+#include "mips_helper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -17,20 +18,12 @@ void log_init(const char *file_name) {
 
 void log_write(const char *format, ...) {
     if (log_file != NULL) {
-        // Get the current timestamp
-        time_t now;
-        time(&now);
-        char *date = ctime(&now);
-        
-        // Remove newline character from ctime() result
-        date[strlen(date) - 1] = '\0'; 
-
         // Start processing variable arguments
         va_list args;
         va_start(args, format);
 
         // Write the log message with a timestamp
-        fprintf(log_file, "[Cycle %s] ", date); // Print the timestamp part of the message
+        fprintf(log_file, "[Cycle %d] ", cycle); // Print the timestamp part of the message
         vfprintf(log_file, format, args);        // Print the user's formatted message
         fprintf(log_file, "\n");                // Print a newline at the end
 

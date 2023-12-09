@@ -59,23 +59,23 @@ char instructionAssembly[16];     // G Var for Assembly
 int PC = 0;         			// Program Counter
 int cycle = 0;
 
-struct instruction {
-	int instructionAddress;
-	char instructionLine[33];
-};
-typedef struct instruction instruction;
+// struct instruction {
+// 	int instructionAddress;
+// 	char instructionLine[33];
+// };
+// typedef struct instruction instruction;
 
-struct registers {
-	char RegisterNumber[6]; // identficador de cada um dos 32 registro
-	char registerData[33];  // 32 bits de dados contidos em cada registrador
-};
-typedef struct registers registers;
+// struct registers {
+// 	char RegisterNumber[6]; // identficador de cada um dos 32 registro
+// 	char registerData[33];  // 32 bits de dados contidos em cada registrador
+// };
+// typedef struct registers registers;
 
-struct data {
-	int dataAddress;   //"linhas" ou endereco dos nossos dados da memoria 
-	char DataLine[33]; // dados contidos em uma "linha" ou endereco
-};
-typedef struct data data;
+// struct data {
+// 	int dataAddress;   //"linhas" ou endereco dos nossos dados da memoria 
+// 	char DataLine[33]; // dados contidos em uma "linha" ou endereco
+// };
+// typedef struct data data;
 
 instruction instructionMemory[16] = {
     { 0, "00100001000000000000000000000000" },
@@ -164,10 +164,10 @@ void printRegisters()
 	printf("\n ### Registers ###\n"); //
 	printf("$zero \t(%s): d%ld, (b%s)\n", registerFile[0].RegisterNumber, strtol(registerFile[0].registerData, NULL, 2),registerFile[0].registerData);
 	printf("$v0 \t(%s): d%ld, (b%s)\n", registerFile[2].RegisterNumber, strtol(registerFile[2].registerData, NULL, 2),registerFile[2].registerData);
-	printf("$t0 \t(%s): d%ld, (b%s)\n", registerFile[8].RegisterNumber, strtol(registerFile[3].registerData, NULL, 2),registerFile[8].registerData);
-	printf("$t1 \t(%s): d%ld, (b%s)\n", registerFile[9].RegisterNumber, strtol(registerFile[8].registerData, NULL, 2),registerFile[9].registerData);
-	printf("$t2 \t(%s): d%ld, (b%s)\n", registerFile[10].RegisterNumber, strtol(registerFile[9].registerData, NULL, 2),registerFile[10].registerData);
-	printf("$t3 \t(%s): d%ld, (b%s)\n", registerFile[11].RegisterNumber, strtol(registerFile[10].registerData, NULL, 2),registerFile[11].registerData);
+	printf("$t0 \t(%s): d%ld, (b%s)\n", registerFile[8].RegisterNumber, strtol(registerFile[8].registerData, NULL, 2),registerFile[8].registerData);
+	printf("$t1 \t(%s): d%ld, (b%s)\n", registerFile[9].RegisterNumber, strtol(registerFile[9].registerData, NULL, 2),registerFile[9].registerData);
+	printf("$t2 \t(%s): d%ld, (b%s)\n", registerFile[10].RegisterNumber, strtol(registerFile[10].registerData, NULL, 2),registerFile[10].registerData);
+	printf("$t3 \t(%s): d%ld, (b%s)\n", registerFile[11].RegisterNumber, strtol(registerFile[11].registerData, NULL, 2),registerFile[11].registerData);
 	printf("$t8 \t(%s): d%ld, (b%s)\n", registerFile[24].RegisterNumber, strtol(registerFile[24].registerData, NULL, 2),registerFile[24].registerData);
 	printf("$t9 \t(%s): d%ld, (b%s)\n", registerFile[25].RegisterNumber, strtol(registerFile[25].registerData, NULL, 2),registerFile[25].registerData);
 
@@ -269,7 +269,7 @@ int alu()
 	itoa(result, temp1, 10);  // convert to text
 	charTo32Bits(temp1, aluOut);  // converts it to binary text and gives the output
 
-	return ALU_reliabilityUpdate();
+	return 1;//ALU_reliabilityUpdate();
 }
 
 void registerOut()
@@ -426,7 +426,8 @@ void writeBack() // no banco de registradores
 int main () 
 {
 	log_init("reliability.log");
-	log_write("PROGRAM START\n");
+	log_write("PROGRAM START");
+	
 
 	printf("\n ---------== Initial value of register file and memory file ==--------\n\n");
 	printDataMemory(); //  imprime estado da Memoria
@@ -438,14 +439,28 @@ int main ()
 	inputLine[0] = '\0';  // zera a linha de entrada
 	//int PC;  // nosso Program Counter
 	//int cycle = 0;
+	int flag = 1;
 	
-	for ( PC = 0 ; PC < INSTRUCTION_LENGTH; PC++ )  //performs a cycle, until the end of the instructions, the number of instructions is fixed
+	for (PC = 0 ; PC < INSTRUCTION_LENGTH; PC++ )  //performs a cycle, until the end of the instructions, the number of instructions is fixed
 	{
+
 		printf("\n\n\n================================================================================================================\n==========================================         Cycle=%d         ========================================\n", cycle++);
 		printRegisters();
 		printDataMemory();
 		printf("\n\n\n\n");
 		
+		// Save processor state every 100 Cycles
+		if(cycle % 1000 == 0)
+		{
+			saveProcessorState();
+		}
+
+		if(cycle == 6356 && flag)
+		{
+			flag = 0;
+			log_write("Injecting transient fault into processor during cycle 6356, causing processor to hang");
+			resetProcessorState();
+		}
 		
 		
 		
@@ -506,7 +521,7 @@ int main ()
 		*/
 		printf("------------------=EXECUTE=------------------\n");
 		registerOut(); // returns output values ​​from registers to buffers (global variables)
-		if(alu())         // ALU arithmetic operations
+		if(!alu())         // ALU arithmetic operations
 		{
 			printf("\n\n\nUNRECOVERABLE FAILURE FROM ALU\n\n\n");
 			break;

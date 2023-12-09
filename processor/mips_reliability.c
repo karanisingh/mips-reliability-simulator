@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 /////////////////////////////////////////////////////
 // Function to initialize the random number generator. Call this once before calling fail_simulate.
@@ -24,7 +25,8 @@ int fail_simulate(double t, double MTTF) {
 
 //////////////////////////////////////////////
 
-
+///////////////////////////////////////////////////////////////////////////////
+//
 ALU_R ALU_RELIABILITY = { 500, 0, 0, 3, 0, 0 };
 
 // 1 if unrecoverable failure
@@ -99,4 +101,58 @@ int ALU_isFailed()
     }
 
 }
+/////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// Checkpointing
+proc_cp PROCESSOR_CHECKPOINT;
+
+int saveProcessorState()
+{
+    memcpy(PROCESSOR_CHECKPOINT.dataMemoryCP, dataMemory, sizeof(dataMemory));
+    memcpy(PROCESSOR_CHECKPOINT.registerFileCP, registerFile, sizeof(registerFile));
+
+    // printf("REG");
+    // for(int i = 0; i < 32; i++)
+    // {
+    //     printf("Saved: %s\nCurrent%s\n\n\n", PROCESSOR_CHECKPOINT.registerFileCP[i].registerData, registerFile[i].registerData);
+    // }
+
+    // printf("MEM");
+    // for(int i = 0; i < 5; i++)
+    //     printf("Saved: %s\nCurrent%s\n\n\n", PROCESSOR_CHECKPOINT.dataMemoryCP[i].DataLine, dataMemory[i].DataLine);
+
+
+    PROCESSOR_CHECKPOINT.PC_CP = PC;
+    // printf("PC: S:%d, C%d", PROCESSOR_CHECKPOINT.PC_CP, PC);
+    log_write("Saving processor state at PC:%d", PC);
+
+    return 0;
+}
+
+int resetProcessorState()
+{
+    // printf("-\n-\n-\n RESET\n");
+    // printf("REG");
+    // for(int i = 0; i < 32; i++)
+    // {
+    //     printf("Saved: %s\nCurrent%s\n\n\n", PROCESSOR_CHECKPOINT.registerFileCP[i].registerData, registerFile[i].registerData);
+    // }
+
+    // printf("MEM");
+    // for(int i = 0; i < 5; i++)
+    //     printf("Saved: %s\nCurrent%s\n\n\n", PROCESSOR_CHECKPOINT.dataMemoryCP[i].DataLine, dataMemory[i].DataLine);
+    log_write("Reseting processor state from PC:%d back to saved PC:%d", PC, PROCESSOR_CHECKPOINT.PC_CP);
+
+    memcpy( dataMemory,PROCESSOR_CHECKPOINT.dataMemoryCP, sizeof(dataMemory));
+    memcpy( registerFile,PROCESSOR_CHECKPOINT.registerFileCP, sizeof(registerFile));
+
+
+    PC = PROCESSOR_CHECKPOINT.PC_CP;
+    // printf("PC: S:%d, C%d", PROCESSOR_CHECKPOINT.PC_CP, PC);
+    return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////

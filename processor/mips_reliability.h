@@ -3,11 +3,13 @@
 #ifndef MIPS_RELIABILITY_H
 #define MIPS_RELIABILITY_H
 
+#include "mips_helper.h"
 
 void init_random();
 
 
 /////////////////////////////////////////////////////////////////
+//
 // ALU STRUCTURAL DUPLICATION
 typedef struct ALU_Reliability {
 	int MTTF;       // mean time (iteration) to fail
@@ -26,6 +28,34 @@ extern ALU_R ALU_RELIABILITY;
 int ALU_simFailure();
 int ALU_isFailed();
 //////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////
+//
+// Checkpointing
+typedef struct processor_state {
+    struct instruction instructionMemoryCP[16];
+    struct data dataMemoryCP[5];
+    struct registers registerFileCP[32];
+    int PC_CP;
+} proc_cp;
+
+extern proc_cp PROCESSOR_CHECKPOINT;
+
+int saveProcessorState();
+int resetProcessorState();
+///////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
 
 
 
