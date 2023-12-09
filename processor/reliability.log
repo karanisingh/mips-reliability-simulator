@@ -1,0 +1,17 @@
+[Cycle 0] PROGRAM START
+[Cycle 1000] Saving processor state at PC:8
+[Cycle 2000] Saving processor state at PC:6
+[Cycle 3000] Saving processor state at PC:6
+[Cycle 4000] Saving processor state at PC:13
+[Cycle 5000] Saving processor state at PC:11
+[Cycle 6000] Saving processor state at PC:11
+[Cycle 6356] Injecting transient fault into processor during cycle 6356, causing processor to hang
+[Cycle 6356] Reseting processor state from PC:8 back to saved PC:11
+[Cycle 7000] Saving processor state at PC:11
+[Cycle 8000] Saving processor state at PC:8
+[Cycle 9000] Saving processor state at PC:8
+[Cycle 10000] Saving processor state at PC:6
+[Cycle 11000] Saving processor state at PC:6
+[Cycle 12000] Saving processor state at PC:13
+[Cycle 13000] Saving processor state at PC:11
+[Cycle 14000] Saving processor state at PC:11

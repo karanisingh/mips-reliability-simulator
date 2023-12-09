@@ -7,6 +7,32 @@
 #include <stdlib.h>
 #include <string.h>  //strcpy()
 
+struct instruction {
+	int instructionAddress;
+	char instructionLine[33];
+};
+typedef struct instruction instruction;
+
+struct registers {
+	char RegisterNumber[6]; // identficador de cada um dos 32 registro
+	char registerData[33];  // 32 bits de dados contidos em cada registrador
+};
+typedef struct registers registers;
+
+struct data {
+	int dataAddress;   //"linhas" ou endereco dos nossos dados da memoria 
+	char DataLine[33]; // dados contidos em uma "linha" ou endereco
+};
+typedef struct data data;
+
+// extern struct instruction instructionMemory[16];
+// extern struct data dataMemory[5];
+// extern struct registers registerFile[32];
+extern instruction instructionMemory[16];
+extern data dataMemory[5];
+extern registers registerFile[32];
+
+
 //Global Variables
 extern char inputLine[33];
 
@@ -41,6 +67,7 @@ extern char branch;
 
 extern char instructionAssembly[16];     // G Var for Assembly
 extern int PC;         // Program Counter
+extern int cycle;
 
 // fim da declaracao de Global Variables
 

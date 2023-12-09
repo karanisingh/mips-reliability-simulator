@@ -7,14 +7,14 @@ CC = gcc
 TARGET = mips
 
 # Source files
-SOURCES = mips.c mips_helper.c
+SOURCES = mips.c mips_helper.c reliability_logging.c mips_reliability.c
 
 # Default build rule
 all: $(TARGET)
 
 # Compile and link the program
 $(TARGET): $(SOURCES)
-	$(CC) $(SOURCES) -o $(TARGET)
+	$(CC) $(SOURCES) -o $(TARGET) -lm
 
 # Run the program
 run: $(TARGET)
