@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 /////////////////////////////////////////////////////
 // Function to initialize the random number generator. Call this once before calling fail_simulate.
@@ -17,50 +18,136 @@ void init_random() {
 // Returns 1 if the component fails by time 't', 0 otherwise.
 int fail_simulate(double t, double MTTF) {
     double lambda = 1.0 / MTTF;
-    double random_value = (double)rand() / RAND_MAX;
-    double cdf = 1 - exp(-lambda * t);
+    double random_value = (double)rand() / RAND_MAX;    
+    double L = exp(-lambda);
+    double p = 1.0;
+    int k = 0;
+
+    do {
+        k++;
+        double u = ((double) rand() / RAND_MAX);
+        p *= u;
+    } while (p > L);
+
+    return (random_value < k - 1);
     
-    return (random_value < cdf);
-}
+
 
 //////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-ALU_R ALU_RELIABILITY = { 500, 0, 0, 3, 0, 0 };
 
-// 1 if unrecoverable failure
+
+//ALU_R ALU_RELIABILITY = { 2000, 0, 10, 0, 0, 0 }; // This should be uncommented out when we want spare redundancy implemented
+ALU_R ALU_RELIABILITY = { 500, 0, 10, 6, 10, 0 };
+
+
 
 int ALU_simFailure()
 {
-    // update lifetime idk lol
+    // update lifetime 
     ALU_RELIABILITY.lifetime++;
 
     // int to hold whether a failure happened for logging
     int failure=0;
 
-    if(ALU_RELIABILITY.N)       //if NMR
-    {
-        //failures in the NMR system
-        int fails=0;
-        // any of the working components can fail
-        for(int i = 0; i < ALU_RELIABILITY.working; i++)
-        {
-            // if fail
-            if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
-                fails++;
-                log_write("ALU NMR structure fail");
-            }
+//ALU_R ALU_RELIABILITY = { 2000, 0, 10, 0, 0, 0 }; // This should be uncommented out when we want spare redundancy implemented
+ALU_R ALU_RELIABILITY = { 500, 0, 10, 6, 10, 0 };
 
+
+
+int ALU_simFailure()
+{
+    // update lifetime \
+    ALU_RELIABILITY.lifetime++;
+
+    // int to hold whether a failure happened for logging
+    int failure=0;
+
+    if(ALU_RELIABILITY.N>0)       //if NMR
+    {
+        // one component can fail at a time
+        if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
+            log_write("ALU NMR structure fail");
+            cycle += 1;                     // 1 cycle penalty
+            ALU_RELIABILITY.spareId++;      // move to the next spare
+            failure = 1;                    // failure flag
+            ALU_RELIABILITY.lifetime = 1;   // reset lifetime (to 1, since spare redoes action)
+            ALU_RELIABILITY.working--;
+            if (ALU_RELIABILITY.working < ALU_RELIABILITY.total) {
+                int failed = ALU_RELIABILITY.total-ALU_RELIABILITY.working;
+                log_write("ALU NMR experienced %d total fails, there are %d remaining", failed, ALU_RELIABILITY.working);
+            }
         }
-        failure=fails;
-        // need to remove the modules that fail
-        ALU_RELIABILITY.working -= fails;
+ 
 
     }
     else            // if STANDBY SPARING
     {
-        // one component canfail at a time
+        // one component can fail at a time
+        if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
+            log_write("ALU Spare %d of %d structure fail", ALU_RELIABILITY.spareId, ALU_RELIABILITY.total);
+            cycle += 1;                     // 1 cycle penalty
+            ALU_RELIABILITY.spareId++;      // move to the next spare
+            failure = 1;                    // failure flag
+            ALU_RELIABILITY.lifetime = 1;   // reset lifetime (to 1, since spare redoes action)
+        }
+    }
+
+    if(ALU_isFailed())
+    {
+        log_write("ALU unrecoverable failure");
+        return 1;
+    }
+    else if(failure){
+        log_write("ALU recovered from a failure");
+        return 0;
+    }
+
+    return 0;
+}
+
+int ALU_isFailed()
+{
+    if(ALU_RELIABILITY.N)
+    {
+        if(ALU_RELIABILITY.working >= ALU_RELIABILITY.N)
+            return 0;
+        else   
+            return 1;
+    }
+    else
+    {
+        if(ALU_RELIABILITY.spareId < ALU_RELIABILITY.total)
+            return 0;
+        else    
+            return 1;
+    }
+
+}
+
+    if(ALU_RELIABILITY.N>0)       //if NMR
+    {
+        // one component can fail at a time
+        if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
+            log_write("ALU NMR structure fail");
+            cycle += 1;                     // 1 cycle penalty
+            ALU_RELIABILITY.spareId++;      // move to the next spare
+            failure = 1;                    // failure flag
+            ALU_RELIABILITY.lifetime = 1;   // reset lifetime (to 1, since spare redoes action)
+            ALU_RELIABILITY.working--;
+            if (ALU_RELIABILITY.working < ALU_RELIABILITY.total) {
+                int failed = ALU_RELIABILITY.total-ALU_RELIABILITY.working;
+                log_write("ALU NMR experienced %d total fails, there are %d remaining", failed, ALU_RELIABILITY.working);
+            }
+        }
+ 
+
+    }
+    else            // if STANDBY SPARING
+    {
+        // one component can fail at a time
         if(fail_simulate(ALU_RELIABILITY.lifetime, ALU_RELIABILITY.MTTF)){
             log_write("ALU Spare %d of %d structure fail", ALU_RELIABILITY.spareId, ALU_RELIABILITY.total);
             cycle += 1;                     // 1 cycle penalty
